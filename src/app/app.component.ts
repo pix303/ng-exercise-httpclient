@@ -2,6 +2,7 @@ import { HttpClient, HttpEventType, HttpHeaders, HttpParams } from '@angular/com
 import { Component } from '@angular/core';
 import { filter, map, mergeAll, take, takeLast, toArray, catchError, tap } from 'rxjs/operators';
 import { Todo } from './todo.model';
+import { User } from './user.model';
 
 @Component({
   selector: 'app-root',
@@ -134,6 +135,24 @@ export class AppComponent {
           this.msgError = err.message;
         }
       );
+  }
+
+  getUser(){
+    this.delegate.get<User[]>("https://jsonplaceholder.typicode.com/users")
+    .pipe(
+      mergeAll(),
+      take(1),
+      toArray(),
+    )
+    .subscribe(
+    (result) => {
+        this.result = JSON.stringify(result, null, 4);
+      },
+        err => {
+          this.showError = true;
+          this.msgError = err.message;
+        }
+    );
   }
 }
 
