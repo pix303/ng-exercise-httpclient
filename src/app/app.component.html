@@ -1,5 +1,4 @@
 <div class="container">
-
   <div class="notification is-info">
     <h1 class="title">HttpClient digest</h1>
   </div>
@@ -11,50 +10,83 @@
           <p>Error</p>
           <button class="delete"></button>
         </div>
-        <div class="message-body">
-          Error: {{msgError}}
-        </div>
+        <div class="message-body">Error: {{ msgError }}</div>
       </article>
     </div>
   </div>
 
   <div class="columns">
-
     <div class="column">
       <div class="block">
         <p>Retrive last 10 not completed todos</p>
-        <button class="button is-link is-light is-outlined" (click)="retriveAndFilter()">Get</button>
+        <button
+          class="button is-link is-light is-outlined"
+          (click)="retriveAndFilter()"
+        >
+          Get
+        </button>
       </div>
       <div class="block">
         <p>Retrive filterd by pamars</p>
-        <button class="button is-link is-light is-outlined" (click)="retriveFiltedByParams()">Get</button>
+        <button
+          class="button is-link is-light is-outlined"
+          (click)="retriveFiltedByParams()"
+        >
+          Get
+        </button>
       </div>
       <div class="block">
         <p>Add new todo</p>
-        <button class="button is-link is-light is-outlined" (click)="postTodo()">Post</button>
+        <button
+          class="button is-link is-light is-outlined"
+          (click)="postTodo()"
+        >
+          Post
+        </button>
       </div>
       <div class="block">
         <p>Patch, update part of a todo</p>
-        <button class="button is-link is-light is-outlined" (click)="patchTodo()">Patch</button>
+        <button
+          class="button is-link is-light is-outlined"
+          (click)="patchTodo()"
+        >
+          Patch
+        </button>
       </div>
       <div class="block">
         <p>Put, update an entire todo</p>
-        <button class="button is-link is-light is-outlined" (click)="putTodo()">Put</button>
+        <button class="button is-link is-light is-outlined" (click)="putTodo()">
+          Put
+        </button>
       </div>
       <div class="block">
         <p>Delete a todo</p>
-        <button class="button is-link is-light is-outlined" (click)="deleteTodo()">Delete</button>
+        <button
+          class="button is-link is-light is-outlined"
+          (click)="deleteTodo()"
+        >
+          Delete
+        </button>
       </div>
       <div class="block">
         <p>Get users</p>
-        <button class="button is-link is-light is-outlined" (click)="getUser()">Users</button>
+        <button class="button is-link is-light is-outlined" (click)="getUser()">
+          Users
+        </button>
+      </div>
+      <div class="block">
+        <p>Get todo and resolve user</p>
+        <button
+          class="button is-link is-light is-outlined"
+          (click)="getCompleteTodos()"
+        >
+          Todo complete
+        </button>
       </div>
     </div>
 
     <div class="column">
-      <pre>{{result}}</pre>
+      <pre>{{ result }}</pre>
     </div>
-
   </div>
-
 </div>

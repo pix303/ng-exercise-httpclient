@@ -1,13 +1,31 @@
-import { HttpClient, HttpEventType, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { filter, map, mergeAll, take, takeLast, toArray, catchError, tap } from 'rxjs/operators';
-import { Todo } from './todo.model';
-import { User } from './user.model';
+import {
+  HttpClient,
+  HttpEventType,
+  HttpHeaders,
+  HttpParams,
+} from "@angular/common/http";
+import { Component } from "@angular/core";
+import { Observable } from "rxjs";
+import {
+  filter,
+  map,
+  mergeAll,
+  take,
+  takeLast,
+  toArray,
+  catchError,
+  tap,
+  concatAll,
+  mergeMap,
+  concatMap,
+} from "rxjs/operators";
+import { Todo } from "./todo.model";
+import { User } from "./user.model";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
 })
 export class AppComponent {
   result: string = "no data";
@@ -16,12 +34,13 @@ export class AppComponent {
 
   baseServiceUrl: string = "http://jsonplaceholder.typicode.com/todos";
 
-  constructor(private delegate: HttpClient) { }
+  constructor(private delegate: HttpClient) {}
 
   retriveAndFilter() {
     this.showError = false;
     //retrive collection of data
-    this.delegate.get<Todo[]>(this.baseServiceUrl)
+    this.delegate
+      .get<Todo[]>(this.baseServiceUrl)
       .pipe(
         //flat array
         mergeAll(),
@@ -34,25 +53,18 @@ export class AppComponent {
         //filter by field
         filter(({ completed }) => completed == false),
         //recompose to array of type
-        toArray(),
+        toArray()
       )
-      .subscribe(
-        data => this.result = JSON.stringify(data, null, 4),
-      );
+      .subscribe((data) => (this.result = JSON.stringify(data, null, 4)));
   }
 
   retriveFiltedByParams() {
     this.showError = false;
     var filterParams: HttpParams = new HttpParams().set("userId", "5");
-    this.delegate.get<Todo[]>(this.baseServiceUrl, { params: filterParams })
-      .pipe(
-        mergeAll(),
-        take(5),
-        toArray()
-      )
-      .subscribe(
-        data => this.result = JSON.stringify(data, null, 5)
-      );
+    this.delegate
+      .get<Todo[]>(this.baseServiceUrl, { params: filterParams })
+      .pipe(mergeAll(), take(5), toArray())
+      .subscribe((data) => (this.result = JSON.stringify(data, null, 5)));
   }
 
   postTodo() {
@@ -60,23 +72,28 @@ export class AppComponent {
     //setting header
     let postHeaders: HttpHeaders = new HttpHeaders();
     //append return new header
-    postHeaders = postHeaders.append("Content-type", "application/json;chartset utf-8;");
+    postHeaders = postHeaders.append(
+      "Content-type",
+      "application/json;chartset utf-8;"
+    );
 
-    this.delegate.post<Todo>(this.baseServiceUrl,
-      {
-        title: 'Hello world',
-        completed: false
-      },
-      {
-        //add header as options
-        headers: postHeaders,
-        //change way to fetch result: response is complete of body (data), headers, status, ecc...
-        observe: "response"
-      }
-    )
+    this.delegate
+      .post<Todo>(
+        this.baseServiceUrl,
+        {
+          title: "Hello world",
+          completed: false,
+        },
+        {
+          //add header as options
+          headers: postHeaders,
+          //change way to fetch result: response is complete of body (data), headers, status, ecc...
+          observe: "response",
+        }
+      )
       .subscribe(
-        result => this.result = JSON.stringify(result, null, 4),
-        err => {
+        (result) => (this.result = JSON.stringify(result, null, 4)),
+        (err) => {
           this.showError = true;
           this.msgError = err.message;
         }
@@ -85,14 +102,13 @@ export class AppComponent {
 
   patchTodo() {
     this.showError = false;
-    this.delegate.patch<Todo>(this.baseServiceUrl + "/2",
-      {
-        title: "hello patch"
-      }
-    )
+    this.delegate
+      .patch<Todo>(this.baseServiceUrl + "/2", {
+        title: "hello patch",
+      })
       .subscribe(
-        result => this.result = JSON.stringify(result, null, 4),
-        err => {
+        (result) => (this.result = JSON.stringify(result, null, 4)),
+        (err) => {
           this.showError = true;
           this.msgError = err.message;
         }
@@ -101,12 +117,16 @@ export class AppComponent {
 
   putTodo() {
     this.showError = false;
-    this.delegate.put<Todo>(this.baseServiceUrl + "/2",
-      new Todo(2, 100, "ciao", true)
-    )
+    this.delegate
+      .put<Todo>(this.baseServiceUrl + "/2", {
+        id: 2,
+        userId: 100,
+        title: "ciao",
+        completed: true,
+      })
       .subscribe(
-        result => this.result = JSON.stringify(result, null, 4),
-        err => {
+        (result) => (this.result = JSON.stringify(result, null, 4)),
+        (err) => {
           this.showError = true;
           this.msgError = err.message;
         }
@@ -115,45 +135,71 @@ export class AppComponent {
 
   deleteTodo() {
     this.showError = false;
-    this.delegate.delete(this.baseServiceUrl + "/1",
-      //to observe phases of request/response
-      { observe: "events" }).
-      pipe(
-        tap(event => {
+    this.delegate
+      .delete(
+        this.baseServiceUrl + "/1",
+        //to observe phases of request/response
+        { observe: "events" }
+      )
+      .pipe(
+        tap((event) => {
           if (event.type === HttpEventType.Sent) {
             console.log("just sent delete request");
-          }
-          else if (event.type === HttpEventType.Response) {
+          } else if (event.type === HttpEventType.Response) {
             console.log("just recive response");
           }
         })
       )
       .subscribe(
-        result => this.result = JSON.stringify(result, null, 4),
-        err => {
+        (result) => (this.result = JSON.stringify(result, null, 4)),
+        (err) => {
           this.showError = true;
           this.msgError = err.message;
         }
       );
   }
 
-  getUser(){
-    this.delegate.get<User[]>("https://jsonplaceholder.typicode.com/users")
-    .pipe(
-      mergeAll(),
-      take(1),
-      toArray(),
-    )
-    .subscribe(
-    (result) => {
-        this.result = JSON.stringify(result, null, 4);
-      },
-        err => {
+  getUser() {
+    this.delegate
+      .get<User[]>("https://jsonplaceholder.typicode.com/users")
+      .pipe(mergeAll(), take(1), toArray())
+      .subscribe(
+        (result) => {
+          this.result = JSON.stringify(result, null, 4);
+        },
+        (err) => {
           this.showError = true;
           this.msgError = err.message;
         }
-    );
+      );
+  }
+
+  getCompleteTodos(): void {
+    this.delegate
+      .get<Todo[]>(this.baseServiceUrl)
+      .pipe(
+        concatAll(),
+        take(5),
+        concatMap((item) => {
+          return this.delegate
+            .get<User>(
+              `https://jsonplaceholder.typicode.com/users/${item.userId}`
+            )
+            .pipe(
+              map((user) => {
+                item.user = user;
+                return item;
+              })
+            );
+        }),
+        toArray()
+      )
+      .subscribe(
+        (result) => (this.result = JSON.stringify(result, null, 4)),
+        (err) => {
+          this.showError = true;
+          this.msgError = err.message;
+        }
+      );
   }
 }
-
-

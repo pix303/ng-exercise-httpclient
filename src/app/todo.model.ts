@@ -1,14 +1,9 @@
-export class Todo {
+import { User } from "./user.model";
 
-	id: number;
-	userId?: number;
-	title: string;
-	completed: boolean;
-
-	constructor(id: number, userId: number = -1, title: string, completed: boolean) {
-		this.id = id;
-		this.userId = userId;
-		this.title = title;
-		this.completed = completed;
-	}
+export interface Todo {
+  id: number;
+  userId?: number;
+  user: User;
+  title: string;
+  completed: boolean;
 }
